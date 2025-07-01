@@ -1,0 +1,91 @@
+#include <stdio.h>
+#include <windows.h>
+#include <tlhelp32.h>
+#include <tchar.h>
+
+#define MAX_THREADS_NUM 50
+#define DLL_PATH "C:\Hachshara\Dll\x64\Debug\Dll.dll"
+#ifdef UNICODE
+#define LOAD_LIBRARY_VERSION "LoadLibraryW"
+#else
+#define LOAD_LIBRARY_VERSION "LoadLibraryA"
+#endif
+
+
+INT _tmain(INT argc, TCHAR** argv)
+{
+	INT dllPathLen = 0, tids[MAX_THREADS_NUM];
+	DWORD pid = 6012;
+	HANDLE processHandle = NULL, handleProcessSnapshot = NULL, threadHandle = NULL;
+	THREADENTRY32* ptrThread = NULL;
+	LPVOID ptrBuffer = NULL, ptrLoadLibary = NULL;
+
+	_tprintf(TEXT("Enter pid of the injected process: "));
+	
+
+	handleProcessSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPTHREAD | TH32CS_SNAPPROCESS, 0);
+
+
+
+	ptrThread = (THREADENTRY32*)calloc(1, sizeof(THREADENTRY32));
+	ptrThread->dwSize = sizeof(THREADENTRY32);
+
+	ZeroMemory(tids, sizeof(INT) * MAX_THREADS_NUM);
+
+	if (!Thread32First(handleProcessSnapshot, ptrThread))
+	{
+		_tprintf(TEXT("Cannot get first thread."));
+	}
+
+	for (INT i = 0; i < MAX_THREADS_NUM; i++)
+	{
+		if (ptrThread->th32OwnerProcessID == pid)
+		{
+			printf("hhhhhhhhhhhhhhh");
+			tids[i] = ptrThread->th32ThreadID;
+		}
+
+		if (!Thread32Next(handleProcessSnapshot, ptrThread))
+		{
+			break;
+		}
+	}
+
+	dllPathLen = _tcslen(TEXT(DLL_PATH)) * sizeof(TCHAR) + sizeof(TCHAR); // +1 for null-terminator
+
+	processHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid);
+	if (processHandle == NULL)
+	{
+		_tprintf(TEXT("OpenProcess failed. Error: %lu\n"), GetLastError());
+		_tprintf(TEXT("Cannot open process."));
+		return 1;
+	}
+
+	ptrBuffer = VirtualAllocEx(processHandle, NULL, dllPathLen, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
+	if (WriteProcessMemory(processHandle, ptrBuffer, TEXT(DLL_PATH), dllPathLen, NULL) == 0)
+	{
+		_tprintf(TEXT("Cannot write to process memory. Error code: %lu\n"), GetLastError());
+		_tprintf(TEXT("Cannot write to process memory."));
+		return 1;
+	}
+
+	ptrLoadLibary = (LPVOID)GetProcAddress(GetModuleHandle("kernel32.dll"), LOAD_LIBRARY_VERSION);
+
+	for (INT i = 0; i < MAX_THREADS_NUM && tids[i]; i++)
+	{
+		threadHandle = OpenThread(THREAD_ALL_ACCESS, NULL, tids[i]);
+		if (threadHandle == INVALID_HANDLE_VALUE)
+		{
+			_tprintf(TEXT("Cannot open thread %d."), tids[i]);
+		}
+		else if (QueueUserAPC((PAPCFUNC)ptrLoadLibary, threadHandle, (ULONG_PTR)ptrBuffer))
+		{
+			_tprintf(TEXT("QueueUserAPC for thread %d."), tids[i]);
+		}
+		else
+		{
+			_tprintf(TEXT("cannot insert QueueAPC for thread %d."), tids[i]);
+		}
+	}
+	return 0;
+}

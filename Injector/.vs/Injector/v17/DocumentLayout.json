@@ -1,0 +1,37 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Hachshara\\Injector\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{C066D564-0250-4764-A646-3838A4AFF384}|Injector\\Injector.vcxproj|C:\\Hachshara\\Injector\\Injector\\source.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{C066D564-0250-4764-A646-3838A4AFF384}|Injector\\Injector.vcxproj|solutionrelative:Injector\\source.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "source.c",
+              "DocumentMoniker": "C:\\Hachshara\\Injector\\Injector\\source.c",
+              "RelativeDocumentMoniker": "Injector\\source.c",
+              "ToolTip": "C:\\Hachshara\\Injector\\Injector\\source.c*",
+              "RelativeToolTip": "Injector\\source.c*",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAA2AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000423|",
+              "WhenOpened": "2025-06-30T11:19:51.759Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
